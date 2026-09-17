@@ -15,8 +15,11 @@ fn multiply(a:f64, b:f64)-> f64{
 }
 
 #[tauri::command]
-fn divide(a:f64, b:f64)-> f64{
-    a/b
+fn divide(a:f64, b:f64)-> Result <f64, String> {
+    if b == 0.0 {
+        return Err("Cannot divide  by zero".to_string());
+    }
+    Ok(a/b)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
