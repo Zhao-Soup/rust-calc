@@ -4,8 +4,14 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
-    async fn invoke(cmd: &str, args: wasm_bindgen::JsValue) -> wasm_bindgen::JsValue;
+    #[wasm_bindgen(
+        js_namespace = ["window", "__TAURI__", "core"],
+        catch
+    )]
+    async fn invoke(
+        cmd: &str,
+        args: wasm_bindgen::JsValue
+    ) -> Result<wasm_bindgen::JsValue, wasm_bindgen::JsValue>; //changed to match exception cases like /0
 }
 
 #[derive(serde::Serialize)]
@@ -34,7 +40,11 @@ pub fn App() -> impl IntoView {
             .unwrap();
 
             let result = invoke(&operation, args).await;
-            set_result.set(result.as_f64().unwrap().to_string());
+
+            match result{
+                Ok(value) => set_result.set(value.as_f64().unwrap().to_string()),
+                Err(error) => set_result.set(error.as_string().unwrap()),
+            }
         });
     };
 
