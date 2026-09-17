@@ -9,7 +9,7 @@ extern "C" {
 }
 
 #[derive(serde::Serialize)]
-struct AddArgs {
+struct CalculatorArgs {
     a: f64,
     b: f64,
 }
@@ -25,7 +25,7 @@ pub fn App() -> impl IntoView {
         let b = b.get();
 
         spawn_local(async move {
-            let args = serde_wasm_bindgen::to_value(&AddArgs {
+            let args = serde_wasm_bindgen::to_value(&CalculatorArgs {
                 a: a.parse().unwrap_or(0.0),
                 b: b.parse().unwrap_or(0.0),
             })
@@ -41,7 +41,7 @@ pub fn App() -> impl IntoView {
         let b = b.get();
 
         spawn_local(async move{
-            let args = serde_wasm_bindgen::to_value(&AddArgs{
+            let args = serde_wasm_bindgen::to_value(&CalculatorArgs{
                 a: a.parse().unwrap_or(0.0),
                 b: b.parse().unwrap_or(0.0),
             })
@@ -57,7 +57,7 @@ pub fn App() -> impl IntoView {
         let b = b.get();
 
         spawn_local(async move{
-            let args = serde_wasm_bindgen::to_value(&AddArgs{
+            let args = serde_wasm_bindgen::to_value(&CalculatorArgs{
                 a: a.parse().unwrap_or(0.0),
                 b: b.parse().unwrap_or(0.0),
             })
@@ -73,7 +73,7 @@ pub fn App() -> impl IntoView {
         let b = b.get();
 
         spawn_local(async move{
-            let args = serde_wasm_bindgen::to_value(&AddArgs{
+            let args = serde_wasm_bindgen::to_value(&CalculatorArgs{
                 a: a.parse().unwrap_or(0.0),
                 b: b.parse().unwrap_or(0.0),
             })
