@@ -25,6 +25,7 @@ pub fn App() -> impl IntoView {
     let (display, set_display) = signal(String::from("0"));
     let (first_operand, set_first_operand) = signal::<Option<f64>>(None);
     let (operation, set_operation) = signal::<Option<String>>(None);
+    let (operation_symbol, set_operation_symbol) = signal(String::new());
     let (start_new, set_start_new) = signal(true);
 
     let append_digit = move |digit: char| {
@@ -49,6 +50,7 @@ pub fn App() -> impl IntoView {
         set_display.set("0".to_string());
         set_first_operand.set(None);
         set_operation.set(None);
+        set_operation_symbol.set(String::new());
         set_start_new.set(true);
     };
 
@@ -70,8 +72,17 @@ pub fn App() -> impl IntoView {
 
     let choose_operation = move |op: &'static str| {
         if let Ok(value) = display.get().parse::<f64>() {
+            let symbol = match op {
+                "add" => "+",
+                "subtract" => "-",
+                "multiply" => "*",
+                "divide" => "/",
+                _ => return,
+            };
+
             set_first_operand.set(Some(value));
             set_operation.set(Some(op.to_string()));
+            set_operation_symbol.set(symbol.to_string());
             set_start_new.set(true);
         }
     };
@@ -80,22 +91,17 @@ pub fn App() -> impl IntoView {
         let first = first_operand.get();
         let selected_operation = operation.get();
         let current_display = display.get();
-        let new_input = start_new.get();
 
         let (a, operation) = match (first, selected_operation) {
             (Some(a), Some(operation)) => (a, operation),
             _ => return,
         };
 
-        let b = if new_input {
-            a
-        } else {
-            match current_display.parse::<f64>() {
-                Ok(value) => value,
-                Err(_) => {
-                    set_display.set("Invalid number".to_string());
-                    return;
-                }
+        let b = match current_display.parse::<f64>() {
+            Ok(value) => value,
+            Err(_) => {
+                set_display.set("Invalid number".to_string());
+                return;
             }
         };
 
@@ -116,6 +122,7 @@ pub fn App() -> impl IntoView {
                         set_display.set(number.to_string());
                         set_first_operand.set(None);
                         set_operation.set(None);
+                        set_operation_symbol.set(String::new());
                         set_start_new.set(true);
                     }
                     None => {
@@ -130,6 +137,7 @@ pub fn App() -> impl IntoView {
                     );
                     set_first_operand.set(None);
                     set_operation.set(None);
+                    set_operation_symbol.set(String::new());
                     set_start_new.set(true);
                 }
             }
@@ -143,7 +151,13 @@ pub fn App() -> impl IntoView {
             </div>
 
             <div class="display">
-                {move || display.get()}
+                <div class="selected-operator">
+                    {move || operation_symbol.get()}
+                </div>
+
+                <div class="display-value">
+                    {move || display.get()}
+                </div>
             </div>
 
             <div class="keypad">
@@ -159,7 +173,10 @@ pub fn App() -> impl IntoView {
                     "%"
                 </button>
 
-                <button class="operator" on:click=move |_| choose_operation("divide")>
+                <button
+                    class="operator"
+                    on:click=move |_| choose_operation("divide")
+                >
                     "/"
                 </button>
 
@@ -175,7 +192,10 @@ pub fn App() -> impl IntoView {
                     "9"
                 </button>
 
-                <button class="operator" on:click=move |_| choose_operation("multiply")>
+                <button
+                    class="operator"
+                    on:click=move |_| choose_operation("multiply")
+                >
                     "*"
                 </button>
 
@@ -191,7 +211,10 @@ pub fn App() -> impl IntoView {
                     "6"
                 </button>
 
-                <button class="operator" on:click=move |_| choose_operation("subtract")>
+                <button
+                    class="operator"
+                    on:click=move |_| choose_operation("subtract")
+                >
                     "-"
                 </button>
 
@@ -207,11 +230,17 @@ pub fn App() -> impl IntoView {
                     "3"
                 </button>
 
-                <button class="operator" on:click=move |_| choose_operation("add")>
+                <button
+                    class="operator"
+                    on:click=move |_| choose_operation("add")
+                >
                     "+"
                 </button>
 
-                <button class="zero" on:click=move |_| append_digit('0')>
+                <button
+                    class="zero"
+                    on:click=move |_| append_digit('0')
+                >
                     "0"
                 </button>
 
